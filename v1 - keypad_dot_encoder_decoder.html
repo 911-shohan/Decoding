@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Keypad Dot Encoder/Decoder</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      padding: 2rem;
+      background-color: #f0f0f0;
+    }
+    h2 {
+      margin-top: 2rem;
+    }
+    textarea, input, button {
+      font-size: 1rem;
+      padding: 0.5rem;
+      margin: 0.5rem 0;
+      width: 100%;
+      max-width: 500px;
+    }
+    .output {
+      font-weight: bold;
+      color: #222;
+      background-color: #fff;
+      padding: 0.5rem;
+      border: 1px solid #ccc;
+      margin-top: 0.5rem;
+    }
+  </style>
+</head>
+<body>
+  <h1>📱 Keypad Dot Encoder / Decoder</h1>
+
+  <h2>🔁 Encode Letters to Keypad Dots</h2>
+  <input id="encodeInput" placeholder="Enter word e.g. SHOHAN" />
+  <button onclick="encodeWord()">Encode</button>
+  <div class="output" id="encodeOutput"></div>
+
+  <h2>🔠 Decode Keypad Dots to Letters</h2>
+  <input id="decodeKeys" placeholder="Enter keys e.g. 746426 or 7 4 6 4 2 6" />
+  <input id="decodeDots" placeholder="Enter dots e.g. ...... ...... ...... ...... ...... ......" />
+  <button onclick="decodeDotsToLetters()">Decode</button>
+  <div class="output" id="decodeOutput"></div>
+
+  <script>
+    const keypad = {
+      2: "ABC", 3: "DEF", 4: "GHI",
+      5: "JKL", 6: "MNO", 7: "PQRS",
+      8: "TUV", 9: "WXYZ"
+    };
+
+    function encodeWord() {
+      const word = document.getElementById("encodeInput").value.toUpperCase();
+      let keys = [];
+      let dots = [];
+
+      for (const char of word) {
+        for (const key in keypad) {
+          const index = keypad[key].indexOf(char);
+          if (index !== -1) {
+            keys.push(key);
+            dots.push(".".repeat(index + 1));
+            break;
+          }
+        }
+      }
+
+      document.getElementById("encodeOutput").innerText =
+        `Keys: ${keys.join(" ")}\nDots: ${dots.join(" ")}`;
+    }
+
+    function decodeDotsToLetters() {
+      let keysRaw = document.getElementById("decodeKeys").value.trim();
+      const dots = document.getElementById("decodeDots").value.trim().split(" ");
+
+      // Auto-split if user entered numbers without spaces
+      let keys = keysRaw.includes(" ") ? keysRaw.split(" ") : keysRaw.split("");
+
+      let result = "";
+
+      for (let i = 0; i < keys.length; i++) {
+        const key = keys[i];
+        const dotCount = dots[i].length;
+        const letters = keypad[key];
+        if (letters && dotCount <= letters.length) {
+          result += letters[dotCount - 1];
+        } else {
+          result += "?";
+        }
+      }
+
+      document.getElementById("decodeOutput").innerText = `Word: ${result}`;
+    }
+  </script>
+</body>
+</html>
